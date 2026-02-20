@@ -17,6 +17,12 @@ For components that are commonly deployed outside `kube-system` (for example Met
 
 ## CLI commands
 
+Interactive executable wizard (recommended):
+
+```bash
+./kubevalctl
+```
+
 Run scan (default command):
 
 ```bash
@@ -35,12 +41,6 @@ List built-in checks:
 ```bash
 python3 kube_validator.py list-checks
 python3 -m kubeval list-checks
-```
-
-Interactive executable wizard (recommended):
-
-```bash
-./kubevalctl
 ```
 
 This flow prompts for:
