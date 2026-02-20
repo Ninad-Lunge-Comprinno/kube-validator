@@ -2,8 +2,7 @@
 
 CLI tool to validate whether key EKS cluster best-practice components are installed.
 
-[![Demo](https://img.youtube.com/vi/5NOonU0VCCs/0.jpg)](https://www.youtube.com/watch?v=5NOonU0VCCs)
-
+<img width="1919" height="844" alt="image" src="https://github.com/user-attachments/assets/5ff19fbb-cdef-44b4-b47b-02b30950bbfd" />
 
 ## What it checks by default
 
