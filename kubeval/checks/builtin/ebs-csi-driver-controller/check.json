@@ -1,0 +1,9 @@
+{
+  "id": "ebs-csi-driver-controller",
+  "title": "EBS CSI driver controller installed",
+  "resource": "deployment",
+  "namespace": "kube-system",
+  "match_type": "contains",
+  "match_value": "ebs-csi-controller",
+  "min_count": 1
+}

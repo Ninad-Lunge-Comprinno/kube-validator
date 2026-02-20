@@ -1,0 +1,9 @@
+{
+  "id": "coredns",
+  "title": "CoreDNS installed",
+  "resource": "deployment",
+  "namespace": "kube-system",
+  "match_type": "exact",
+  "match_value": "coredns",
+  "min_count": 1
+}

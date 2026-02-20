@@ -1,0 +1,9 @@
+{
+  "id": "ebs-csi-driver-node",
+  "title": "EBS CSI driver node daemonset installed",
+  "resource": "daemonset",
+  "namespace": "kube-system",
+  "match_type": "contains",
+  "match_value": "ebs-csi-node",
+  "min_count": 1
+}

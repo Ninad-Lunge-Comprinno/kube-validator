@@ -1,0 +1,9 @@
+{
+  "id": "metrics-server",
+  "title": "Metrics Server installed",
+  "resource": "deployment",
+  "namespace": null,
+  "match_type": "contains",
+  "match_value": "metrics-server",
+  "min_count": 1
+}

@@ -1,0 +1,9 @@
+{
+  "id": "karpenter",
+  "title": "Karpenter installed",
+  "resource": "deployment",
+  "namespace": null,
+  "match_type": "contains",
+  "match_value": "karpenter",
+  "min_count": 1
+}

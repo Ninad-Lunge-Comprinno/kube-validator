@@ -1,0 +1,9 @@
+{
+  "id": "vpc-cni",
+  "title": "Amazon VPC CNI installed (aws-node)",
+  "resource": "daemonset",
+  "namespace": "kube-system",
+  "match_type": "exact",
+  "match_value": "aws-node",
+  "min_count": 1
+}

@@ -1,0 +1,22 @@
+{
+  "checks": [
+    {
+      "id": "aws-load-balancer-controller",
+      "title": "AWS Load Balancer Controller installed",
+      "resource": "deployment",
+      "namespace": "kube-system",
+      "match_type": "contains",
+      "match_value": "aws-load-balancer-controller",
+      "min_count": 1
+    },
+    {
+      "id": "external-dns",
+      "title": "ExternalDNS installed",
+      "resource": "deployment",
+      "namespace": "kube-system",
+      "match_type": "contains",
+      "match_value": "external-dns",
+      "min_count": 1
+    }
+  ]
+}

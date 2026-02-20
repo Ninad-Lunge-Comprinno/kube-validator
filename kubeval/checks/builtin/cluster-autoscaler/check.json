@@ -1,0 +1,9 @@
+{
+  "id": "cluster-autoscaler",
+  "title": "Cluster Autoscaler installed",
+  "resource": "deployment",
+  "namespace": null,
+  "match_type": "contains",
+  "match_value": "cluster-autoscaler",
+  "min_count": 1
+}

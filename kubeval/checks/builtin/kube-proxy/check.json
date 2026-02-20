@@ -1,0 +1,9 @@
+{
+  "id": "kube-proxy",
+  "title": "kube-proxy daemonset installed",
+  "resource": "daemonset",
+  "namespace": "kube-system",
+  "match_type": "exact",
+  "match_value": "kube-proxy",
+  "min_count": 1
+}

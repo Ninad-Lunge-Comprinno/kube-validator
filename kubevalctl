@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+from __future__ import annotations
+
+import os
+import shutil
+import subprocess
+import sys
+
+from kubeval.banner import print_banner
+from kubeval.cli import main as kubeval_main
+
+
+class UserAbort(Exception):
+    pass
+
+
+def _ask(prompt: str, default: str | None = None) -> str:
+    suffix = f" [{default}]" if default else ""
+    try:
+        value = input(f"{prompt}{suffix}: ").strip()
+    except EOFError as exc:
+        raise UserAbort("Input interrupted") from exc
+    if value:
+        return value
+    return default or ""
+
+
+def _ask_yes_no(prompt: str, default_no: bool = True) -> bool:
+    default_hint = "y/N" if default_no else "Y/n"
+    try:
+        value = input(f"{prompt} ({default_hint}): ").strip().lower()
+    except EOFError as exc:
+        raise UserAbort("Input interrupted") from exc
+    if not value:
+        return not default_no
+    return value in {"y", "yes"}
+
+
+def _check_binary(name: str) -> bool:
+    return shutil.which(name) is not None
+
+
+def _run(cmd: list[str], capture: bool = True) -> tuple[int, str]:
+    try:
+        proc = subprocess.run(
+            cmd,
+            check=False,
+            text=True,
+            capture_output=capture,
+        )
+    except Exception as exc:
+        return 1, str(exc)
+
+    if capture:
+        output = proc.stdout.strip() or proc.stderr.strip()
+    else:
+        output = ""
+    return proc.returncode, output
+
+
+def _ensure_aws_credentials(region: str, profile: str | None) -> bool:
+    cmd = ["aws"]
+    if profile:
+        cmd += ["--profile", profile]
+    cmd += ["sts", "get-caller-identity", "--output", "json"]
+    if region:
+        cmd += ["--region", region]
+
+    code, output = _run(cmd)
+    if code == 0:
+        return True
+
+    print("\nAWS credentials not configured or not valid.")
+    if output:
+        print(f"Details: {output}")
+    if not _ask_yes_no("Do you want to configure AWS credentials now?"):
+        return False
+
+    configure_cmd = ["aws"]
+    if profile:
+        configure_cmd += ["--profile", profile]
+    configure_cmd += ["configure"]
+
+    print("\nStarting `aws configure`...")
+    try:
+        configure_proc = subprocess.run(configure_cmd, check=False)
+    except Exception as exc:
+        print(f"Failed to run aws configure: {exc}")
+        return False
+    if configure_proc.returncode != 0:
+        print("aws configure did not complete successfully.")
+        return False
+
+    code, output = _run(cmd)
+    if code != 0:
+        print("Credentials still invalid after configuration.")
+        if output:
+            print(f"Details: {output}")
+        return False
+    return True
+
+
+def _update_kubeconfig(region: str, cluster_name: str, profile: str | None) -> bool:
+    cmd = ["aws"]
+    if profile:
+        cmd += ["--profile", profile]
+    cmd += ["eks", "update-kubeconfig", "--region", region, "--name", cluster_name]
+    code, output = _run(cmd)
+    if code != 0:
+        print("\nFailed to update kubeconfig.")
+        if output:
+            print(f"Details: {output}")
+        return False
+    if output:
+        print(f"\n{output}")
+    return True
+
+
+def main() -> int:
+    print_banner()
+    print("Interactive EKS validation wizard\n")
+
+    if not _check_binary("aws"):
+        print("ERROR: aws CLI is not installed or not in PATH.")
+        return 2
+    if not _check_binary("kubectl"):
+        print("ERROR: kubectl is not installed or not in PATH.")
+        return 2
+
+    try:
+        default_region = os.getenv("AWS_REGION") or os.getenv("AWS_DEFAULT_REGION") or "ap-south-1"
+        region = _ask("AWS region", default_region)
+        cluster_name = ""
+        while not cluster_name:
+            cluster_name = _ask("EKS cluster name")
+            if not cluster_name:
+                print("Cluster name is required.")
+
+        profile_input = _ask("AWS profile (optional)", "")
+        profile = profile_input or None
+
+        checks_file_input = _ask("Custom checks file path (optional)", "")
+        checks_file = checks_file_input or None
+
+        output = _ask("Output format (table/json)", "table").lower()
+        if output not in {"table", "json"}:
+            print("Invalid output format, using 'table'.")
+            output = "table"
+    except UserAbort:
+        print("\nInput interrupted. Exiting.")
+        return 130
+
+    print("\nVerifying AWS credentials...")
+    if not _ensure_aws_credentials(region, profile):
+        print("Unable to continue without valid AWS credentials.")
+        return 2
+
+    print("Updating kubeconfig...")
+    if not _update_kubeconfig(region, cluster_name, profile):
+        return 2
+
+    argv: list[str] = ["scan", "--output", output]
+    if checks_file:
+        argv += ["--checks-file", checks_file]
+    argv += ["--no-banner"]
+
+    print("\nRunning cluster checks...\n")
+    return kubeval_main(argv)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
