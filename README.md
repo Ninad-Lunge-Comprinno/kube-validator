@@ -2,7 +2,7 @@
 
 CLI tool to validate whether key EKS cluster best-practice components are installed.
 
-![Demo]([https://raw.githubusercontent.com/username/repository/branch/path/to/video.mp4](https://github.com/Ninad-Lunge-Comprinno/kube-validator/blob/master/media/kube-validator-demo-v1.mp4))
+![Demo](https://img.youtube.com/vi/5NOonU0VCCs/0.jpg)](https://www.youtube.com/watch?v=5NOonU0VCCs)
 
 
 ## What it checks by default
