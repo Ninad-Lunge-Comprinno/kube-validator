@@ -141,3 +141,4 @@ Provide a JSON file:
 ## Documentation
 
 - `docs/ARCHITECTURE.md`: detailed explanation of code flow, module responsibilities, and extension patterns
+- `docs/FLOW_DIAGRAM.md`: Mermaid flow diagrams for the wizard, scan path, and check execution flow
