@@ -74,22 +74,22 @@ flowchart TD
 
 ```mermaid
 flowchart LR
-    A[ResourceCheck list] --> B[run_checks or spinner loop]
-    B --> C[run_resource_check(check, client)]
-    C --> D[KubectlClient.get_resources]
-    D --> E[Build kubectl get ... -o json command]
-    E --> F[subprocess.run]
+    A[ResourceCheck list] --> B[Run checks or spinner loop]
+    B --> C[Run single resource check]
+    C --> D[Fetch resources through KubectlClient]
+    D --> E[Build kubectl get command with json output]
+    E --> F[Execute kubectl subprocess]
     F --> G{Command ok?}
     G -->|No| H[Return CheckResult ERROR]
     G -->|Yes| I[Parse items from kubectl JSON]
-    I --> J[Match resource names by exact contains or regex]
-    J --> K{matches >= min_count?}
+    I --> J[Match resource names by exact contains or regex rules]
+    J --> K{Enough matches found?}
     K -->|Yes| L[Return CheckResult PASS]
     K -->|No| M[Return CheckResult FAIL]
     H --> N[Collect result]
     L --> N
     M --> N
-    N --> O[enforce_autoscaling_coverage]
-    O --> P[summarize]
-    P --> Q[render table/json]
+    N --> O[Apply autoscaling coverage policy]
+    O --> P[Build summary]
+    P --> Q[Render table or json output]
 ```
